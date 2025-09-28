@@ -1,0 +1,315 @@
+/* pages/edit-task/edit-task.wxss */
+
+.container {
+  padding: 40rpx 32rpx;
+  background-color: #f5f5f5;
+  min-height: 100vh;
+}
+
+/* 完成状态切换 */
+.completion-status {
+  margin-bottom: 32rpx;
+}
+
+.completion-toggle {
+  background-color: white;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  padding: 32rpx 24rpx;
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  transition: all 0.3s;
+}
+
+.completion-toggle.completed {
+  background-color: #f0f9ff;
+  border-color: #34C759;
+}
+
+.completion-icon {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 50%;
+  background-color: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28rpx;
+  color: #999;
+}
+
+.completion-toggle.completed .completion-icon {
+  background-color: #34C759;
+  color: white;
+}
+
+.completion-text {
+  font-size: 32rpx;
+  color: #333;
+  font-weight: 500;
+}
+
+.completion-toggle.completed .completion-text {
+  color: #34C759;
+}
+
+/* 表单组 */
+.form-group {
+  margin-bottom: 48rpx;
+}
+
+.label {
+  font-size: 32rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+  font-weight: 500;
+}
+
+.input,
+.textarea,
+.date-picker,
+.priority-option {
+  background-color: white;
+  border: 2rpx solid #e0e0e0;
+  border-radius: 12rpx;
+  font-size: 32rpx;
+}
+
+.input {
+  padding: 32rpx 24rpx;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  border-color: #007AFF;
+  box-shadow: 0 0 0 4rpx rgba(0, 122, 255, 0.1);
+}
+
+.input.completed-input {
+  background-color: #f9f9f9;
+  color: #666;
+  text-decoration: line-through;
+}
+
+.textarea {
+  padding: 32rpx 24rpx;
+  width: 100%;
+  min-height: 200rpx;
+  box-sizing: border-box;
+}
+
+.textarea:focus {
+  border-color: #007AFF;
+  box-shadow: 0 0 0 4rpx rgba(0, 122, 255, 0.1);
+}
+
+.textarea.completed-input {
+  background-color: #f9f9f9;
+  color: #666;
+  text-decoration: line-through;
+}
+
+.char-count {
+  text-align: right;
+  font-size: 24rpx;
+  color: #999;
+  margin-top: 8rpx;
+}
+
+/* 日期选择器 */
+.date-picker {
+  padding: 32rpx 24rpx;
+  color: #333;
+}
+
+.date-picker.placeholder {
+  color: #999;
+}
+
+.date-picker.completed-input {
+  background-color: #f9f9f9;
+  color: #666;
+  text-decoration: line-through;
+}
+
+.clear-date {
+  color: #007AFF;
+  font-size: 28rpx;
+  text-align: center;
+  padding: 16rpx;
+  margin-top: 16rpx;
+}
+
+/* 优先级选择 */
+.priority-options {
+  display: flex;
+  gap: 24rpx;
+}
+
+.priority-option {
+  flex: 1;
+  padding: 24rpx 16rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12rpx;
+  transition: all 0.3s;
+}
+
+.priority-option.selected {
+  border-color: #007AFF;
+  box-shadow: 0 0 0 4rpx rgba(0, 122, 255, 0.1);
+}
+
+.priority-option.completed-input {
+  background-color: #f9f9f9;
+  opacity: 0.7;
+}
+
+.priority-color {
+  width: 32rpx;
+  height: 32rpx;
+  border-radius: 50%;
+}
+
+.priority-color.priority-high {
+  background-color: #FF3B30;
+}
+
+.priority-color.priority-medium {
+  background-color: #FF9500;
+}
+
+.priority-color.priority-low {
+  background-color: #34C759;
+}
+
+.priority-text {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 任务信息 */
+.task-info {
+  background-color: white;
+  border-radius: 12rpx;
+  padding: 32rpx 24rpx;
+  margin-bottom: 32rpx;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.info-item:last-child {
+  margin-bottom: 0;
+}
+
+.info-label {
+  font-size: 28rpx;
+  color: #666;
+}
+
+.info-value {
+  font-size: 28rpx;
+  color: #333;
+}
+
+/* 错误提示 */
+.error-container {
+  background-color: #fef2f2;
+  border: 2rpx solid #fecaca;
+  border-radius: 12rpx;
+  padding: 24rpx;
+  margin-bottom: 32rpx;
+}
+
+.error-item {
+  color: #dc2626;
+  font-size: 28rpx;
+  margin-bottom: 8rpx;
+}
+
+.error-item:last-child {
+  margin-bottom: 0;
+}
+
+/* 按钮组 */
+.button-group {
+  margin-top: 80rpx;
+  padding-bottom: 40rpx;
+}
+
+.btn-danger {
+  width: 100%;
+  padding: 32rpx;
+  font-size: 32rpx;
+  border-radius: 12rpx;
+  margin-bottom: 24rpx;
+}
+
+.button-row {
+  display: flex;
+  gap: 24rpx;
+}
+
+.button-row button {
+  flex: 1;
+  padding: 32rpx;
+  font-size: 32rpx;
+  border-radius: 12rpx;
+}
+
+.btn-primary:disabled {
+  background-color: #ccc;
+  color: #999;
+}
+
+/* 深色模式适配 */
+@media (prefers-color-scheme: dark) {
+  .container {
+    background-color: #1a1a1a;
+  }
+
+  .completion-toggle,
+  .input,
+  .textarea,
+  .date-picker,
+  .priority-option,
+  .task-info {
+    background-color: #2a2a2a;
+    border-color: #444;
+    color: white;
+  }
+
+  .label,
+  .priority-text,
+  .info-label,
+  .info-value,
+  .completion-text {
+    color: white;
+  }
+
+  .date-picker.placeholder {
+    color: #888;
+  }
+
+  .char-count {
+    color: #888;
+  }
+
+  .input.completed-input,
+  .textarea.completed-input,
+  .date-picker.completed-input {
+    background-color: #333;
+    color: #888;
+  }
+
+  .priority-option.completed-input {
+    background-color: #333;
+  }
+}

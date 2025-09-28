@@ -1,0 +1,101 @@
+<!--pages/index/index.wxml-->
+<view class="container">
+  <!-- 头部区域 -->
+  <view class="header">
+    <view class="title">简约任务</view>
+    <view class="subtitle">{{tasks.length}} 个任务</view>
+  </view>
+
+  <!-- 排序和筛选栏 -->
+  <view class="filter-bar">
+    <picker bindchange="onSortChange" value="{{sortIndex}}" range="{{sortOptions}}">
+      <view class="sort-picker">
+        <text>{{sortOptions[sortIndex]}}</text>
+        <text class="arrow">▼</text>
+      </view>
+    </picker>
+
+    <view class="filter-buttons">
+      <view class="filter-btn {{showCompleted ? '' : 'active'}}" bindtap="toggleShowCompleted">
+        进行中
+      </view>
+      <view class="filter-btn {{showCompleted ? 'active' : ''}}" bindtap="toggleShowCompleted">
+        已完成
+      </view>
+    </view>
+  </view>
+
+  <!-- 搜索框 -->
+  <view class="search-container">
+    <input class="search-input"
+           placeholder="搜索任务..."
+           value="{{searchKeyword}}"
+           bindinput="onSearchInput"
+           confirm-type="search" />
+  </view>
+
+  <!-- 任务列表 -->
+  <view class="task-list">
+    <view wx:if="{{filteredTasks.length === 0}}" class="empty-state">
+      <view class="empty-icon">📝</view>
+      <view class="empty-text">{{emptyText}}</view>
+    </view>
+
+    <view wx:else>
+      <view wx:for="{{filteredTasks}}"
+            wx:key="id"
+            class="task-item {{item.completed ? 'completed' : ''}}"
+            bindtap="onTaskTap"
+            data-id="{{item.id}}">
+
+        <!-- 任务主要内容 -->
+        <view class="task-content">
+          <view class="task-header">
+            <checkbox class="task-checkbox"
+                     checked="{{item.completed}}"
+                     bindtap="onToggleComplete"
+                     data-id="{{item.id}}" />
+            <view class="task-title {{item.completed ? 'completed-text' : ''}}">
+              {{item.title}}
+            </view>
+            <view class="priority-badge priority-{{item.priority}}">
+              {{priorityLabels[item.priority]}}
+            </view>
+          </view>
+
+          <view wx:if="{{item.description}}" class="task-description">
+            {{item.description}}
+          </view>
+
+          <view class="task-meta">
+            <view wx:if="{{item.dueDate}}" class="due-date {{isOverdue(item.dueDate) && !item.completed ? 'overdue' : ''}}">
+              📅 {{formatDate(item.dueDate)}}
+            </view>
+            <view class="created-date">
+              创建于 {{formatCreatedDate(item.createdAt)}}
+            </view>
+          </view>
+        </view>
+
+        <!-- 操作按钮 -->
+        <view class="task-actions">
+          <view class="action-btn edit-btn"
+                bindtap="onEditTask"
+                data-id="{{item.id}}">
+            ✏️
+          </view>
+          <view class="action-btn delete-btn"
+                bindtap="onDeleteTask"
+                data-id="{{item.id}}">
+            🗑️
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 添加按钮 -->
+  <view class="fab" bindtap="onAddTask">
+    <text class="fab-icon">+</text>
+  </view>
+</view>

@@ -1,0 +1,102 @@
+<!--pages/edit-task/edit-task.wxml-->
+<view class="container">
+  <form bindsubmit="onSubmit">
+    <!-- 完成状态 -->
+    <view class="form-group completion-status">
+      <view class="completion-toggle {{formData.completed ? 'completed' : ''}}" bindtap="toggleCompletion">
+        <view class="completion-icon">
+          {{formData.completed ? '✓' : '○'}}
+        </view>
+        <view class="completion-text">
+          {{formData.completed ? '已完成' : '未完成'}}
+        </view>
+      </view>
+    </view>
+
+    <!-- 任务标题 -->
+    <view class="form-group">
+      <view class="label">任务标题 *</view>
+      <input class="input {{formData.completed ? 'completed-input' : ''}}"
+             name="title"
+             placeholder="请输入任务标题"
+             value="{{formData.title}}"
+             bindinput="onTitleInput"
+             maxlength="100" />
+      <view class="char-count">{{formData.title.length}}/100</view>
+    </view>
+
+    <!-- 任务描述 -->
+    <view class="form-group">
+      <view class="label">任务描述</view>
+      <textarea class="textarea {{formData.completed ? 'completed-input' : ''}}"
+                name="description"
+                placeholder="请输入任务描述（可选）"
+                value="{{formData.description}}"
+                bindinput="onDescriptionInput"
+                maxlength="500"
+                auto-height />
+      <view class="char-count">{{formData.description.length}}/500</view>
+    </view>
+
+    <!-- 截止日期 -->
+    <view class="form-group">
+      <view class="label">截止日期</view>
+      <picker mode="date"
+              value="{{formData.dueDate}}"
+              start="{{today}}"
+              bindchange="onDateChange">
+        <view class="date-picker {{formData.dueDate ? '' : 'placeholder'}} {{formData.completed ? 'completed-input' : ''}}">
+          {{formData.dueDate ? formatDisplayDate(formData.dueDate) : '选择截止日期（可选）'}}
+        </view>
+      </picker>
+      <view wx:if="{{formData.dueDate}}" class="clear-date" bindtap="clearDate">
+        清除日期
+      </view>
+    </view>
+
+    <!-- 优先级选择 -->
+    <view class="form-group">
+      <view class="label">优先级</view>
+      <view class="priority-options">
+        <view wx:for="{{priorityOptions}}"
+              wx:key="value"
+              class="priority-option {{formData.priority === item.value ? 'selected' : ''}} {{formData.completed ? 'completed-input' : ''}}"
+              bindtap="onPrioritySelect"
+              data-priority="{{item.value}}">
+          <view class="priority-color priority-{{item.value}}"></view>
+          <view class="priority-text">{{item.label}}</view>
+        </view>
+      </view>
+    </view>
+
+    <!-- 任务信息 -->
+    <view class="task-info">
+      <view class="info-item">
+        <text class="info-label">创建时间：</text>
+        <text class="info-value">{{formatDateTime(originalTask.createdAt)}}</text>
+      </view>
+      <view wx:if="{{originalTask.updatedAt && originalTask.updatedAt !== originalTask.createdAt}}" class="info-item">
+        <text class="info-label">更新时间：</text>
+        <text class="info-value">{{formatDateTime(originalTask.updatedAt)}}</text>
+      </view>
+    </view>
+
+    <!-- 错误提示 -->
+    <view wx:if="{{errors.length > 0}}" class="error-container">
+      <view wx:for="{{errors}}" wx:key="*this" class="error-item">
+        {{item}}
+      </view>
+    </view>
+
+    <!-- 操作按钮 -->
+    <view class="button-group">
+      <button class="btn-danger" bindtap="onDelete">删除</button>
+      <view class="button-row">
+        <button class="btn-secondary" bindtap="onCancel">取消</button>
+        <button class="btn-primary" form-type="submit" disabled="{{!isValid || !hasChanges}}">
+          {{hasChanges ? '保存更改' : '无更改'}}
+        </button>
+      </view>
+    </view>
+  </form>
+</view>
