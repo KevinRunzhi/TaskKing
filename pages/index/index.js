@@ -15,13 +15,12 @@ const app = getApp()
 Page({
   data: {
     tasks: [],
-    filteredTasks: [],
+    pendingTasks: [],
+    completedTasks: [],
     searchKeyword: '',
-    showCompleted: false,
     sortIndex: 0,
     sortOptions: ['按创建时间', '按截止日期', '按优先级'],
-    priorityLabels: PRIORITY_LABELS,
-    emptyText: '还没有任务，点击右下角添加第一个任务吧！'
+    priorityLabels: PRIORITY_LABELS
   },
 
   onLoad() {
@@ -41,38 +40,29 @@ Page({
   },
 
   applyFiltersAndSort() {
-    let { tasks, searchKeyword, showCompleted, sortIndex } = this.data
+    let { tasks, searchKeyword, sortIndex } = this.data
 
-    // 按完成状态筛选
-    let filtered = filterByCompleted(tasks, showCompleted)
+    // 分离未完成和已完成任务
+    let pending = filterByCompleted(tasks, false)
+    let completed = filterByCompleted(tasks, true)
 
     // 搜索过滤
     if (searchKeyword.trim()) {
-      filtered = searchTasks(filtered, searchKeyword)
+      pending = searchTasks(pending, searchKeyword)
+      completed = searchTasks(completed, searchKeyword)
     }
 
     // 排序
-    switch (sortIndex) {
-      case 0: // 按创建时间
-        filtered = sortByCreatedAt(filtered)
-        break
-      case 1: // 按截止日期
-        filtered = sortByDate(filtered)
-        break
-      case 2: // 按优先级
-        filtered = sortByPriority(filtered)
-        break
-    }
+    const sortFunctions = [sortByCreatedAt, sortByDate, sortByPriority]
+    const sortFunc = sortFunctions[sortIndex]
 
-    const emptyText = searchKeyword.trim()
-      ? '没有找到匹配的任务'
-      : showCompleted
-        ? '还没有已完成的任务'
-        : '还没有任务，点击右下角添加第一个任务吧！'
+    pending = sortFunc(pending)
+    completed = sortFunc(completed)
 
     this.setData({
-      filteredTasks: filtered,
-      emptyText
+      tasks: tasks, // 确保tasks数据也更新到视图
+      pendingTasks: pending,
+      completedTasks: completed
     })
   },
 
@@ -90,42 +80,55 @@ Page({
     this.applyFiltersAndSort()
   },
 
-  toggleShowCompleted() {
-    this.setData({
-      showCompleted: !this.data.showCompleted
-    })
-    this.applyFiltersAndSort()
-  },
 
   onTaskTap(e) {
     const taskId = e.currentTarget.dataset.id
-    // 阻止事件冒泡到checkbox
-    if (e.target.dataset.action !== 'checkbox') {
-      wx.navigateTo({
-        url: `/pages/edit-task/edit-task?id=${taskId}`
-      })
-    }
+    wx.navigateTo({
+      url: `/pages/edit-task/edit-task?id=${taskId}`
+    })
   },
 
   onToggleComplete(e) {
-    e.stopPropagation()
     const taskId = e.currentTarget.dataset.id
     const task = this.data.tasks.find(t => t.id === taskId)
 
-    if (task) {
-      app.updateTask(taskId, {
-        completed: !task.completed,
-        updatedAt: new Date().toISOString()
-      })
-      this.loadTasks()
+    if (!task) return
 
-      // 显示反馈
-      wx.showToast({
-        title: task.completed ? '任务未完成' : '任务已完成',
-        icon: 'success',
-        duration: 1500
-      })
-    }
+    const newStatus = !task.completed
+    console.log('Toggle task:', taskId, 'to', newStatus)
+
+    // 1. 立即更新本地任务数组
+    const updatedTasks = this.data.tasks.map(t => {
+      if (t.id === taskId) {
+        return {
+          ...t,
+          completed: newStatus,
+          updatedAt: new Date().toISOString()
+        }
+      }
+      return t
+    })
+
+    // 2. 立即更新全局数据并保存
+    app.updateTask(taskId, {
+      completed: newStatus,
+      updatedAt: new Date().toISOString()
+    })
+
+    // 3. 立即更新页面数据
+    this.setData({
+      tasks: updatedTasks
+    })
+
+    // 4. 立即重新分类显示
+    this.applyFiltersAndSort()
+
+    // 5. 显示反馈
+    wx.showToast({
+      title: newStatus ? '任务已完成' : '任务未完成',
+      icon: 'success',
+      duration: 1000
+    })
   },
 
   onAddTask() {

@@ -1,5 +1,5 @@
 {
-  "miniprogramRoot": "miniprogram/",
+  "miniprogramRoot": "./",
   "cloudfunctionRoot": "cloudfunctions/",
   "setting": {
     "urlCheck": true,
@@ -72,7 +72,7 @@
     }
   },
   "compileType": "miniprogram",
-  "srcMiniprogramRoot": "miniprogram/",
+  "srcMiniprogramRoot": "./",
   "packOptions": {
     "ignore": [],
     "include": []

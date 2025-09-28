@@ -12,3 +12,26 @@ $RECYCLE.BIN/
 
 # Node.js
 node_modules/
+npm-debug.log*
+
+# 微信小程序
+.preview/
+.cache/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 临时文件
+*.tmp
+*.temp
+.env
+.env.local
+
+# 日志文件
+*.log
+
+# 私有配置（如果有的话）
+project.private.config.json
