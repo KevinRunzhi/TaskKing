@@ -2,6 +2,7 @@
   "pages": [
     "pages/index/index",
     "pages/statistics/index",
+    "pages/quadrant/index",
     "pages/add-task/add-task",
     "pages/edit-task/edit-task",
     "pages/categories/categories"
@@ -9,7 +10,7 @@
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#ffffff",
-    "navigationBarTitleText": "简约任务",
+    "navigationBarTitleText": "时间罗盘",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#f5f5f5"
   },
@@ -30,9 +31,16 @@
         "text": "统计",
         "iconPath": "assets/tabbar/summary.png",
         "selectedIconPath": "assets/tabbar/summary-active.png"
+      },
+      {
+        "pagePath": "pages/quadrant/index",
+        "text": "象限",
+        "iconPath": "assets/tabbar/quadrant.png",
+        "selectedIconPath": "assets/tabbar/quadrant-active.png"
       }
     ]
   },
   "style": "v2",
-  "sitemapLocation": "sitemap.json"
+  "sitemapLocation": "sitemap.json",
+  "lazyCodeLoading": "requiredComponents"
 }

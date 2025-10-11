@@ -1,0 +1,244 @@
+<block wx:if="{{viewMode === 'stacked'}}">
+  <view class="page">
+    <view class="header-card">
+      <view class="header-title">时间罗盘</view>
+      <view class="header-subtitle">
+        当前 {{activeTasks.length}} 个活跃任务 · 阈值 {{threshold}}
+      </view>
+    </view>
+
+    <view class="filter-card">
+      <view class="filter-row">
+        <view class="search-box">
+          <text class="search-icon">🔍</text>
+          <input
+            class="search-input"
+            placeholder="搜索任务标题或描述"
+            value="{{searchKeyword}}"
+            confirm-type="search"
+            bindinput="onSearchInput"
+          />
+          <view
+            wx:if="{{searchKeyword}}"
+            class="search-clear"
+            bindtap="onClearSearch"
+          >
+            ✕
+          </view>
+        </view>
+
+        <view class="mode-buttons">
+          <view
+            class="mode-toggle primary"
+            bindtap="switchToExpanded"
+          >
+            进入拖拽模式
+          </view>
+        </view>
+      </view>
+
+      <view class="filter-row secondary">
+        <picker
+          mode="selector"
+          range="{{categoryOptions}}"
+          range-key="name"
+          value="{{selectedCategoryIndex}}"
+          bindchange="onCategoryChange"
+        >
+          <view class="picker-display">
+            <text>
+              {{(categoryOptions[selectedCategoryIndex] && categoryOptions[selectedCategoryIndex].name) || '全部分类'}}
+            </text>
+            <text class="picker-arrow">⌄</text>
+          </view>
+        </picker>
+      </view>
+
+      <scroll-view
+        wx:if="{{tagOptions.length}}"
+        scroll-x="true"
+        class="tag-scroll"
+      >
+        <view
+          wx:for="{{tagOptions}}"
+          wx:key="*this"
+          class="tag-chip {{selectedTags.indexOf(item) !== -1 ? 'active' : ''}}"
+          data-tag="{{item}}"
+          bindtap="onTagTap"
+        >
+          #{{item}}
+        </view>
+      </scroll-view>
+    </view>
+
+    <view class="stats-card">
+      <view class="stat-item q1">
+        <view class="stat-label">立即处理</view>
+        <view class="stat-value">{{quadrantStats.q1}}</view>
+      </view>
+      <view class="stat-item q2">
+        <view class="stat-label">计划安排</view>
+        <view class="stat-value">{{quadrantStats.q2}}</view>
+      </view>
+      <view class="stat-item q3">
+        <view class="stat-label">尽量委托</view>
+        <view class="stat-value">{{quadrantStats.q3}}</view>
+      </view>
+      <view class="stat-item q4">
+        <view class="stat-label">可以舍弃</view>
+        <view class="stat-value">{{quadrantStats.q4}}</view>
+      </view>
+    </view>
+
+    <view class="stacked-board">
+      <view
+        wx:for="{{stackedConfig}}"
+        wx:key="key"
+        class="stacked-quadrant {{item.key}}"
+      >
+        <view class="stacked-header">
+          <view class="stacked-title">{{item.title}}</view>
+          <view class="stacked-count">{{quadrantBuckets[item.key].length}}</view>
+        </view>
+        <view
+          wx:if="{{!quadrantBuckets[item.key].length}}"
+          class="stacked-empty"
+        >
+          暂无任务
+        </view>
+        <view wx:else class="stacked-list">
+          <view
+            wx:for="{{quadrantBuckets[item.key]}}"
+            wx:for-item="task"
+            wx:key="id"
+            class="stacked-card"
+            data-id="{{task.id}}"
+            bindtap="onCardTap"
+          >
+            <view class="stacked-card-title">{{task.title}}</view>
+            <view class="stacked-card-meta">
+              重要 {{task.importance}} · 紧急 {{task.urgency}}
+            </view>
+            <view wx:if="{{task.dueText}}" class="stacked-card-due">
+              ⏰ {{task.dueText}}
+            </view>
+            <view class="stacked-card-actions">
+              <view
+                class="stacked-card-action"
+                data-id="{{task.id}}"
+                catchtap="onCompleteTap"
+              >
+                完成
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <view class="completed-section">
+      <view class="section-header">
+        <view class="section-title">已完成任务</view>
+        <view class="section-count">{{completedTasks.length}}</view>
+      </view>
+      <view wx:if="{{completedTasks.length === 0}}" class="empty-completed">
+        暂无已完成任务，继续保持节奏～
+      </view>
+      <view wx:else class="completed-list">
+        <view
+          wx:for="{{completedTasks}}"
+          wx:key="id"
+          class="completed-item"
+          data-id="{{item.id}}"
+          bindtap="onShowCompletedDetail"
+        >
+          <view class="completed-title">{{item.title}}</view>
+          <view class="completed-meta">
+            {{item.categoryIcon}} {{item.categoryName}}
+            <text wx:if="{{item.completedAtLabel}}">
+              · 完成于 {{item.completedAtLabel}}
+            </text>
+          </view>
+        </view>
+      </view>
+    </view>
+  </view>
+</block>
+
+<block wx:elif="{{viewMode === 'expanded'}}">
+  <view class="drag-overlay">
+    <view class="overlay-header">
+      <view class="overlay-title">拖拽模式</view>
+      <view class="overlay-actions">
+        <view class="overlay-hint">
+          {{batchMode ? '批量模式：点击卡片可勾选' : '拖动任务卡片，即时更新重要/紧急'}}
+        </view>
+        <view
+          class="overlay-btn {{batchMode ? 'primary' : ''}}"
+          bindtap="toggleBatchMode"
+        >
+          {{batchMode ? '退出批量' : '批量操作'}}
+        </view>
+        <view class="overlay-btn close" bindtap="switchToStacked">
+          返回
+        </view>
+      </view>
+    </view>
+
+    <view class="overlay-content">
+      <view class="quadrant-wrapper">
+        <movable-area
+          id="quadrantArea"
+          class="quadrant-area"
+          damping="40"
+          friction="16"
+        >
+          <movable-view
+            wx:for="{{activeTasks}}"
+            wx:key="id"
+            class="task-card"
+            direction="{{batchMode ? 'none' : 'all'}}"
+            x="{{item.position.x}}"
+            y="{{item.position.y}}"
+            data-id="{{item.id}}"
+            bindchange="onCardChange"
+            bindtouchend="onCardTouchEnd"
+            inertia="true"
+          >
+            <view
+              class="card-surface quadrant-{{item.quadrant}} {{item.selected ? 'selected' : ''}}"
+              data-id="{{item.id}}"
+              bindtap="onCardTap"
+            >
+              <view class="card-content">
+                <view class="card-title">{{item.title}}</view>
+                <view class="card-due {{item.isOverdue ? 'danger' : ''}}">
+                  {{item.dueText || '未设置截止'}}
+                </view>
+              </view>
+              <view wx:if="{{batchMode}}" class="batch-overlay">
+                <view
+                  class="batch-checkbox {{item.selected ? 'checked' : ''}}"
+                  data-id="{{item.id}}"
+                  catchtap="onToggleSelect"
+                >
+                  <text>{{item.selected ? '✓' : ''}}</text>
+                </view>
+              </view>
+            </view>
+          </movable-view>
+        </movable-area>
+
+        <view class="axis-label axis-left">不重要</view>
+        <view class="axis-label axis-right">重要</view>
+        <view class="axis-label axis-top">紧急</view>
+        <view class="axis-label axis-bottom">不紧急</view>
+
+        <view class="quadrant-title title-1">立即处理</view>
+        <view class="quadrant-title title-2">计划安排</view>
+        <view class="quadrant-title title-3">尽量委托</view>
+        <view class="quadrant-title title-4">可以舍弃</view>
+      </view>
+    </view>
+  </view>
+</block>

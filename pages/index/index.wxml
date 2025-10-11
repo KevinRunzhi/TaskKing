@@ -2,7 +2,7 @@
 <view class="container">
   <!-- 头部区域 -->
   <view class="header">
-    <view class="title">简约任务</view>
+    <view class="title">时间罗盘</view>
     <view class="subtitle">{{tasks.length}} 个任务</view>
   </view>
 

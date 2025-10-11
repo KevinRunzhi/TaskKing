@@ -75,7 +75,10 @@ Page({
     hasChanges: false,
     today: '',
     reminderTemplateConfigured: isReminderTemplateConfigured(),
-    defaultReminderTime: '09:00'
+    defaultReminderTime: '09:00',
+    quadrantRecommendation: '',
+    importanceScore: 0,
+    urgencyScore: 0
   },
 
   onLoad(options) {
@@ -355,7 +358,14 @@ Page({
         recurrenceEndDateDisplay: this.formatDisplayDate(normalized.recurrenceEndDate),
         recurrenceTypeIndex: this.getRecurrenceTypeIndex(recurrenceTypeForState),
         recurrenceIntervalUnit: this.getRecurrenceIntervalUnit(recurrenceTypeForState),
-        showRecurrenceWeekdays: showWeekdays
+        showRecurrenceWeekdays: showWeekdays,
+        quadrantRecommendation: normalized.quadrantRecommendation || '',
+        importanceScore: Number.isFinite(normalized.importanceScore)
+          ? normalized.importanceScore
+          : 0,
+        urgencyScore: Number.isFinite(normalized.urgencyScore)
+          ? normalized.urgencyScore
+          : 0
       },
       () => {
         this.syncCategories(normalized.categoryId || '', { revalidate: false })
@@ -883,7 +893,14 @@ Page({
           },
           dueDateDisplay: this.formatDisplayDate(updatedTask.dueDate),
           reminderDateDisplay: this.formatDisplayDate(updatedTask.reminderDate),
-          hasChanges: false
+          hasChanges: false,
+          quadrantRecommendation: updatedTask.quadrantRecommendation || '',
+          importanceScore: Number.isFinite(updatedTask.importanceScore)
+            ? updatedTask.importanceScore
+            : 0,
+          urgencyScore: Number.isFinite(updatedTask.urgencyScore)
+            ? updatedTask.urgencyScore
+            : 0
         },
         () => {
           this.syncCategories(updatedTask.categoryId || '', { revalidate: false })

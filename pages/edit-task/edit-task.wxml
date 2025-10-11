@@ -23,6 +23,13 @@
              bindinput="onTitleInput"
              maxlength="100" />
       <view class="char-count">{{formData.title.length}}/100</view>
+      <view class="quadrant-summary" wx:if="{{quadrantRecommendation}}">
+        <view class="summary-row">
+          <view class="summary-chip">{{quadrantRecommendation}}</view>
+          <view class="summary-score">重要 {{importanceScore}} · 紧急 {{urgencyScore}}</view>
+        </view>
+        <view class="summary-hint">在象限视图中拖拽可调整评估</view>
+      </view>
     </view>
 
     <!-- 任务描述 -->

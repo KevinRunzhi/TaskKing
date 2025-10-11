@@ -4,7 +4,11 @@ const {
   splitISODateTime,
   createDateTime,
   RECURRENCE_TYPES,
-  normalizeWeekdays
+  normalizeWeekdays,
+  clampScore,
+  inferImportanceScore,
+  inferUrgencyScore,
+  getQuadrantRecommendation
 } = require('./utils/task.js')
 
 const MAX_GENERATED_OCCURRENCES = 10
@@ -159,6 +163,38 @@ App({
       normalized.recurrenceStatus = 'inactive'
     }
 
+    normalized.importanceScore = clampScore(
+      Object.prototype.hasOwnProperty.call(normalized, 'importanceScore')
+        ? normalized.importanceScore
+        : inferImportanceScore(normalized.priority)
+    )
+
+    normalized.urgencyScore = clampScore(
+      Object.prototype.hasOwnProperty.call(normalized, 'urgencyScore')
+        ? normalized.urgencyScore
+        : inferUrgencyScore(normalized.dueDateTime || '')
+    )
+
+    normalized.quadrantRecommendation = getQuadrantRecommendation(
+      normalized.importanceScore,
+      normalized.urgencyScore
+    )
+
+    const rawTags = Array.isArray(normalized.tags) ? normalized.tags : []
+    const tagSet = new Set()
+    normalized.tags = rawTags
+      .map(tag => (typeof tag === 'string' ? tag.trim() : String(tag || '').trim()))
+      .filter(tag => {
+        if (!tag) {
+          return false
+        }
+        if (tagSet.has(tag)) {
+          return false
+        }
+        tagSet.add(tag)
+        return true
+      })
+
     return normalized
   },
 
@@ -277,6 +313,18 @@ App({
     this.ensureRecurringTasks()
     this.saveTasks()
     return this.globalData.tasks[index]
+  },
+
+  updateTaskQuadrant(id, importanceScore, urgencyScore) {
+    const clampedImportance = clampScore(importanceScore)
+    const clampedUrgency = clampScore(urgencyScore)
+
+    return this.updateTask(id, {
+      importanceScore: clampedImportance,
+      urgencyScore: clampedUrgency,
+      quadrantRecommendation: getQuadrantRecommendation(clampedImportance, clampedUrgency),
+      updatedAt: new Date().toISOString()
+    })
   },
 
   deleteTask(id) {
