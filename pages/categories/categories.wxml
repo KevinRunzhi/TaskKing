@@ -1,0 +1,100 @@
+<view class="categories-page">
+  <view class="new-category-card">
+    <view class="section-title">创建新分类</view>
+    <input class="name-input"
+           placeholder="请输入分类名称"
+           value="{{newCategory.name}}"
+           bindinput="onNewNameInput" />
+
+    <view class="section-subtitle">选择颜色</view>
+    <view class="color-grid">
+      <view wx:for="{{colorOptions}}"
+            wx:key="*this"
+            class="color-swatch {{newCategory.color === item ? 'selected' : ''}}"
+            style="background-color: {{item}};"
+            bindtap="onNewColorSelect"
+            data-color="{{item}}"></view>
+    </view>
+
+    <view class="section-subtitle">选择图标</view>
+    <view class="icon-grid">
+      <view wx:for="{{iconOptions}}"
+            wx:key="*this"
+            class="icon-item {{newCategory.icon === item ? 'selected' : ''}}"
+            bindtap="onNewIconSelect"
+            data-icon="{{item}}">
+        {{item}}
+      </view>
+    </view>
+
+    <button class="primary-btn"
+            bindtap="onCreateCategory"
+            disabled="{{!newCategoryValid}}">添加分类</button>
+  </view>
+
+  <view class="section-title list-title">分类列表</view>
+
+  <view wx:if="{{categories.length === 0}}" class="empty-hint">
+    暂无分类，请先创建。
+  </view>
+
+  <view wx:else class="category-list">
+    <view wx:for="{{categories}}"
+          wx:key="id"
+          class="category-item">
+      <view class="category-info">
+        <view class="category-avatar" style="background-color: {{item.color}};">
+          {{item.icon}}
+        </view>
+        <view class="category-text">
+          <view class="category-name">{{item.name}}</view>
+          <view class="category-meta">
+            <view class="color-indicator" style="background-color: {{item.color}};"></view>
+            <text class="category-color">{{item.color}}</text>
+            <text class="task-count">任务：{{item.taskCount}}</text>
+          </view>
+        </view>
+      </view>
+      <view class="category-actions">
+        <button class="action-btn" size="mini" bindtap="onEditCategory" data-id="{{item.id}}">编辑</button>
+        <button class="action-btn delete" size="mini" bindtap="onDeleteCategory" data-id="{{item.id}}">删除</button>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{showEditModal}}" class="modal-mask" catchtouchmove="preventTouchMove">
+    <view class="modal-content">
+      <view class="modal-title">编辑分类</view>
+      <input class="name-input"
+             placeholder="请输入分类名称"
+             value="{{editForm.name}}"
+             bindinput="onEditNameInput" />
+
+      <view class="section-subtitle">选择颜色</view>
+      <view class="color-grid">
+        <view wx:for="{{colorOptions}}"
+              wx:key="*this"
+              class="color-swatch {{editForm.color === item ? 'selected' : ''}}"
+              style="background-color: {{item}};"
+              bindtap="onEditColorSelect"
+              data-color="{{item}}"></view>
+      </view>
+
+      <view class="section-subtitle">选择图标</view>
+      <view class="icon-grid">
+        <view wx:for="{{iconOptions}}"
+              wx:key="*this"
+              class="icon-item {{editForm.icon === item ? 'selected' : ''}}"
+              bindtap="onEditIconSelect"
+              data-icon="{{item}}">
+          {{item}}
+        </view>
+      </view>
+
+      <view class="modal-actions">
+        <button class="action-btn" bindtap="onCancelEdit">取消</button>
+        <button class="primary-btn" bindtap="onSaveEdit" disabled="{{!editFormValid}}">保存</button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -27,19 +27,156 @@
       <view class="char-count">{{formData.description.length}}/500</view>
     </view>
 
+    <!-- 任务分类 -->
+    <view class="form-group">
+      <view class="label-row">
+        <view class="label">任务分类</view>
+        <navigator url="/pages/categories/categories" class="manage-link">管理分类</navigator>
+      </view>
+      <picker mode="selector"
+              range="{{categories}}"
+              range-key="name"
+              value="{{selectedCategoryIndex}}"
+              bindchange="onCategoryChange">
+        <view class="category-picker">
+          <view class="category-icon"
+                style="background-color: {{selectedCategory ? selectedCategory.color : '#cccccc'}}">
+            {{selectedCategory ? selectedCategory.icon : '📌'}}
+          </view>
+          <view class="category-name">
+            {{selectedCategory ? selectedCategory.name : '未分类'}}
+          </view>
+        </view>
+      </picker>
+    </view>
+
     <!-- 截止日期 -->
     <view class="form-group">
       <view class="label">截止日期</view>
       <picker mode="date"
               value="{{formData.dueDate}}"
               start="{{today}}"
-              bindchange="onDateChange">
+              bindchange="onDueDateChange">
         <view class="date-picker {{formData.dueDate ? '' : 'placeholder'}}">
           {{formData.dueDate ? formatDisplayDate(formData.dueDate) : '选择截止日期（可选）'}}
         </view>
       </picker>
       <view wx:if="{{formData.dueDate}}" class="clear-date" bindtap="clearDate">
         清除日期
+      </view>
+    </view>
+
+    <!-- 截止时间 -->
+    <view class="form-group">
+      <view class="label">截止时间</view>
+      <picker mode="time"
+              value="{{formData.dueTime || defaultReminderTime}}"
+              start="00:00"
+              end="23:59"
+              bindchange="onDueTimeChange">
+        <view class="date-picker {{formData.dueTime ? '' : 'placeholder'}}">
+          {{formData.dueTime ? formData.dueTime : '选择截止时间（可选）'}}
+        </view>
+      </picker>
+    </view>
+
+    <!-- 提醒设置 -->
+    <view class="form-group reminder-toggle">
+      <view class="label">任务提醒</view>
+      <switch class="reminder-switch"
+              checked="{{formData.reminderEnabled}}"
+              bindchange="onReminderToggle" />
+    </view>
+
+    <view wx:if="{{formData.reminderEnabled}}">
+      <view class="form-group">
+        <view class="label">提醒日期</view>
+        <picker mode="date"
+                value="{{formData.reminderDate}}"
+                start="{{today}}"
+                bindchange="onReminderDateChange">
+          <view class="date-picker {{formData.reminderDate ? '' : 'placeholder'}}">
+            {{formData.reminderDate ? formatDisplayDate(formData.reminderDate) : '选择提醒日期'}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-group">
+        <view class="label">提醒时间</view>
+        <picker mode="time"
+                value="{{formData.reminderTime || defaultReminderTime}}"
+                start="00:00"
+                end="23:59"
+                bindchange="onReminderTimeChange">
+          <view class="date-picker {{formData.reminderTime ? '' : 'placeholder'}}">
+            {{formData.reminderTime ? formData.reminderTime : '选择提醒时间'}}
+          </view>
+        </picker>
+        <view class="clear-date" bindtap="clearReminder">关闭提醒</view>
+      </view>
+    </view>
+
+    <!-- 重复设置 -->
+    <view class="form-group recurrence-toggle">
+      <view class="label">重复任务</view>
+      <switch class="recurrence-switch"
+              checked="{{formData.recurrenceEnabled}}"
+              bindchange="onRecurrenceToggle" />
+    </view>
+
+    <view wx:if="{{formData.recurrenceEnabled}}">
+      <view class="form-group">
+        <view class="label">重复频率</view>
+        <picker mode="selector"
+                range="{{recurrenceOptions}}"
+                range-key="label"
+                value="{{recurrenceTypeIndex}}"
+                bindchange="onRecurrenceTypeChange">
+          <view class="date-picker">
+            {{recurrenceOptions[recurrenceTypeIndex] ? recurrenceOptions[recurrenceTypeIndex].label : ''}}
+          </view>
+        </picker>
+      </view>
+
+      <view class="form-group">
+        <view class="label">重复间隔</view>
+        <view class="interval-input-wrapper">
+          <input class="interval-input"
+                 type="number"
+                 placeholder="请输入重复间隔"
+                 min="1"
+                 value="{{formData.recurrenceInterval}}"
+                 bindinput="onRecurrenceIntervalInput" />
+          <view class="interval-unit">每{{formData.recurrenceInterval || 1}}{{recurrenceIntervalUnit}}</view>
+        </view>
+      </view>
+
+      <view class="form-group">
+        <view class="label">重复结束时间</view>
+        <picker mode="date"
+                value="{{formData.recurrenceEndDate}}"
+                start="{{formData.dueDate || today}}"
+                bindchange="onRecurrenceEndDateChange">
+          <view class="date-picker {{formData.recurrenceEndDate ? '' : 'placeholder'}}">
+            {{formData.recurrenceEndDate ? formatDisplayDate(formData.recurrenceEndDate) : '选择结束日期（可选）'}}
+          </view>
+        </picker>
+        <view wx:if="{{formData.recurrenceEndDate}}" class="clear-date" bindtap="clearRecurrenceEndDate">
+          清除结束日期
+        </view>
+      </view>
+
+      <view wx:if="{{showRecurrenceWeekdays}}" class="form-group">
+        <view class="label">自定义星期</view>
+        <view class="weekday-selector">
+          <view wx:for="{{weekdayOptions}}"
+                wx:key="value"
+                class="weekday-option {{formData.recurrenceWeekdays.indexOf(item.value) !== -1 ? 'selected' : ''}}"
+                data-value="{{item.value}}"
+                bindtap="onRecurrenceWeekdayToggle">
+            {{item.label}}
+          </view>
+        </view>
       </view>
     </view>
 

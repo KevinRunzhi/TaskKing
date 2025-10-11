@@ -1,0 +1,5 @@
+disable_response_storage = true
+export OPENAI_BASE_URL="https://us.cceverything.com/openai"
+export export OPENAI_API_KEY="cr_ed36c94a02cc617d8a07350d70f414d4d00e8e22610e475db612476e2df9369e"
+
+

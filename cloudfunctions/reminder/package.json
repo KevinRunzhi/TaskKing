@@ -1,0 +1,7 @@
+{
+  "name": "reminder",
+  "version": "1.0.0",
+  "description": "Task reminder subscription message handler",
+  "main": "index.js",
+  "dependencies": {}
+}

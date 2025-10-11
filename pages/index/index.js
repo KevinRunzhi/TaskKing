@@ -1,13 +1,13 @@
 // pages/index/index.js
 const {
   PRIORITY_LABELS,
-  formatDate,
   isOverdue,
   sortByPriority,
   sortByDate,
   sortByCreatedAt,
   filterByCompleted,
-  searchTasks
+  searchTasks,
+  splitISODateTime
 } = require('../../utils/task.js')
 
 const app = getApp()
@@ -20,27 +20,31 @@ Page({
     searchKeyword: '',
     sortIndex: 0,
     sortOptions: ['按创建时间', '按截止日期', '按优先级'],
-    priorityLabels: PRIORITY_LABELS
+    priorityLabels: PRIORITY_LABELS,
+    categories: [],
+    categoryTabs: [],
+    selectedCategoryId: 'all'
   },
 
   onLoad() {
-    this.loadTasks()
+    this.applyFiltersAndSort()
   },
 
   onShow() {
-    this.loadTasks()
-  },
-
-  loadTasks() {
-    const tasks = app.getTasks()
-    this.setData({
-      tasks
-    })
     this.applyFiltersAndSort()
   },
 
   applyFiltersAndSort() {
-    let { tasks, searchKeyword, sortIndex } = this.data
+    const { searchKeyword, sortIndex, selectedCategoryId } = this.data
+    const categoryState = this.prepareCategoryState(selectedCategoryId)
+    const categories = categoryState.categories
+    const activeCategoryId = categoryState.selectedCategoryId
+
+    let tasks = app.getTasks()
+
+    if (activeCategoryId !== 'all') {
+      tasks = tasks.filter(task => task.categoryId === activeCategoryId)
+    }
 
     // 分离未完成和已完成任务
     let pending = filterByCompleted(tasks, false)
@@ -59,11 +63,44 @@ Page({
     pending = sortFunc(pending)
     completed = sortFunc(completed)
 
+    const combined = [...pending, ...completed]
+
     this.setData({
-      tasks: tasks, // 确保tasks数据也更新到视图
-      pendingTasks: pending,
-      completedTasks: completed
+      categories,
+      categoryTabs: categoryState.categoryTabs,
+      selectedCategoryId: activeCategoryId,
+      tasks: this.decorateTasks(combined, categories),
+      pendingTasks: this.decorateTasks(pending, categories),
+      completedTasks: this.decorateTasks(completed, categories)
     })
+  },
+
+  prepareCategoryState(preferredId = 'all') {
+    const categories = app.getCategories()
+
+    const categoryTabs = [
+      { id: 'all', name: '全部', color: '#64748B', icon: '🌐' },
+      ...categories.map(category => ({
+        id: category.id,
+        name: category.name,
+        color: category.color,
+        icon: category.icon
+      }))
+    ]
+
+    let selectedId = preferredId || 'all'
+    if (selectedId !== 'all') {
+      const exists = categories.some(category => category.id === selectedId)
+      if (!exists) {
+        selectedId = 'all'
+      }
+    }
+
+    return {
+      categories,
+      categoryTabs,
+      selectedCategoryId: selectedId
+    }
   },
 
   onSearchInput(e) {
@@ -81,6 +118,31 @@ Page({
   },
 
 
+  onCategorySelect(e) {
+    const categoryId = e.currentTarget.dataset.id
+    if (!categoryId) {
+      return
+    }
+
+    if (categoryId === this.data.selectedCategoryId) {
+      return
+    }
+
+    this.setData(
+      {
+        selectedCategoryId: categoryId
+      },
+      () => this.applyFiltersAndSort()
+    )
+  },
+
+  onManageCategories() {
+    wx.navigateTo({
+      url: '/pages/categories/categories'
+    })
+  },
+
+
   onTaskTap(e) {
     const taskId = e.currentTarget.dataset.id
     wx.navigateTo({
@@ -90,40 +152,23 @@ Page({
 
   onToggleComplete(e) {
     const taskId = e.currentTarget.dataset.id
-    const task = this.data.tasks.find(t => t.id === taskId)
+    const task = app.getTasks().find(t => t.id === taskId)
 
     if (!task) return
 
     const newStatus = !task.completed
-    console.log('Toggle task:', taskId, 'to', newStatus)
 
-    // 1. 立即更新本地任务数组
-    const updatedTasks = this.data.tasks.map(t => {
-      if (t.id === taskId) {
-        return {
-          ...t,
-          completed: newStatus,
-          updatedAt: new Date().toISOString()
-        }
-      }
-      return t
-    })
-
-    // 2. 立即更新全局数据并保存
-    app.updateTask(taskId, {
+    const now = new Date().toISOString()
+    const updates = {
       completed: newStatus,
-      updatedAt: new Date().toISOString()
-    })
+      updatedAt: now,
+      completedAt: newStatus ? now : ''
+    }
 
-    // 3. 立即更新页面数据
-    this.setData({
-      tasks: updatedTasks
-    })
+    app.updateTask(taskId, updates)
 
-    // 4. 立即重新分类显示
     this.applyFiltersAndSort()
 
-    // 5. 显示反馈
     wx.showToast({
       title: newStatus ? '任务已完成' : '任务未完成',
       icon: 'success',
@@ -157,7 +202,8 @@ Page({
         success: (res) => {
           if (res.confirm) {
             app.deleteTask(taskId)
-            this.loadTasks()
+            this.removeReminder(taskId)
+            this.applyFiltersAndSort()
 
             wx.showToast({
               title: '任务已删除',
@@ -168,10 +214,6 @@ Page({
         }
       })
     }
-  },
-
-  formatDate(dateString) {
-    return formatDate(dateString)
   },
 
   formatCreatedDate(dateString) {
@@ -193,12 +235,95 @@ Page({
     }
   },
 
-  isOverdue(dateString) {
-    return isOverdue(dateString)
+  isOverdueTask(task) {
+    if (!task) return false
+    return isOverdue(task.dueDate, task.dueTime || '', task.dueDateTime || '')
+  },
+
+  decorateTask(task, categories = []) {
+    if (!task) return null
+
+    const dueParts = splitISODateTime(task.dueDateTime || '')
+    const dueDate = task.dueDate || dueParts.date || ''
+    const dueTime = task.dueTime || dueParts.time || ''
+
+    const category = categories.find(c => c.id === task.categoryId) || null
+    const categoryColor = category && category.color ? category.color : '#94A3B8'
+    const categoryIcon = category && category.icon ? category.icon : '📌'
+    const categoryName = category && category.name ? category.name : '未分类'
+    const categoryColorLight =
+      categoryColor && categoryColor.length === 7
+        ? `${categoryColor}1A`
+        : '#E2E8F0'
+
+    const recurrenceLabel = this.getRecurrenceLabel(task)
+
+    return {
+      ...task,
+      displayDueDate: dueDate,
+      displayDueTime: dueTime,
+      category,
+      categoryName,
+      categoryIcon,
+      categoryColor,
+      categoryColorLight,
+      recurrenceLabel,
+      recurrenceEnabled: !!task.recurrenceEnabled
+    }
+  },
+
+  decorateTasks(tasks = [], categories = []) {
+    return tasks
+      .map(task => this.decorateTask(task, categories))
+      .filter(Boolean)
+  },
+
+  getRecurrenceLabel(task) {
+    if (!task || !task.recurrenceEnabled) {
+      return ''
+    }
+
+    const interval = Math.max(1, Number.parseInt(task.recurrenceInterval, 10) || 1)
+    const type = task.recurrenceType || 'daily'
+    const weekdays = Array.isArray(task.recurrenceWeekdays)
+      ? task.recurrenceWeekdays
+      : []
+    const weekdayNames = ['周日', '周一', '周二', '周三', '周四', '周五', '周六']
+
+    switch (type) {
+      case 'daily':
+        return interval === 1 ? '重复 · 每天' : `重复 · 每${interval}天`
+      case 'weekly':
+      case 'custom': {
+        const base = interval === 1 ? '重复 · 每周' : `重复 · 每${interval}周`
+        const names = weekdays
+          .map(day => weekdayNames[Number(day)] || '')
+          .filter(Boolean)
+        return names.length ? `${base} · ${names.join('、')}` : base
+      }
+      case 'monthly':
+        return interval === 1 ? '重复 · 每月' : `重复 · 每${interval}月`
+      default:
+        return '重复任务'
+    }
   },
 
   onPullDownRefresh() {
-    this.loadTasks()
+    this.applyFiltersAndSort()
     wx.stopPullDownRefresh()
+  },
+
+  removeReminder(taskId) {
+    if (!wx.cloud) return
+
+    wx.cloud.callFunction({
+      name: 'reminder',
+      data: {
+        action: 'remove',
+        taskId
+      }
+    }).catch(error => {
+      console.error('Failed to remove reminder:', error)
+    })
   }
 })

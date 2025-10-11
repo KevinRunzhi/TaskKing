@@ -1,8 +1,10 @@
 {
   "pages": [
     "pages/index/index",
+    "pages/statistics/index",
     "pages/add-task/add-task",
-    "pages/edit-task/edit-task"
+    "pages/edit-task/edit-task",
+    "pages/categories/categories"
   ],
   "window": {
     "backgroundTextStyle": "light",
@@ -10,6 +12,26 @@
     "navigationBarTitleText": "简约任务",
     "navigationBarTextStyle": "black",
     "backgroundColor": "#f5f5f5"
+  },
+  "tabBar": {
+    "color": "#94A3B8",
+    "selectedColor": "#2563EB",
+    "backgroundColor": "#ffffff",
+    "borderStyle": "black",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "任务",
+        "iconPath": "assets/tabbar/tasks.png",
+        "selectedIconPath": "assets/tabbar/tasks-active.png"
+      },
+      {
+        "pagePath": "pages/statistics/index",
+        "text": "统计",
+        "iconPath": "assets/tabbar/summary.png",
+        "selectedIconPath": "assets/tabbar/summary-active.png"
+      }
+    ]
   },
   "style": "v2",
   "sitemapLocation": "sitemap.json"

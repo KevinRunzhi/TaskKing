@@ -1,0 +1,139 @@
+.page {
+  min-height: 100vh;
+  padding: 48rpx 32rpx 120rpx;
+  background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+  box-sizing: border-box;
+}
+
+.page-header {
+  margin-bottom: 32rpx;
+}
+
+.page-title {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.page-subtitle {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #64748b;
+}
+
+.range-tabs {
+  display: flex;
+  background: #e2e8f0;
+  border-radius: 999rpx;
+  padding: 8rpx;
+  gap: 8rpx;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 0;
+  font-size: 28rpx;
+  color: #475569;
+  border-radius: 999rpx;
+  transition: all 0.2s ease;
+}
+
+.tab-item.active {
+  background: linear-gradient(135deg, #2563eb, #38bdf8);
+  color: #ffffff;
+  font-weight: 600;
+  box-shadow: 0 8rpx 16rpx rgba(37, 99, 235, 0.15);
+}
+
+.card-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 24rpx;
+  margin-top: 36rpx;
+}
+
+.stat-card {
+  background: #ffffff;
+  border-radius: 28rpx;
+  padding: 32rpx;
+  box-shadow: 0 18rpx 36rpx rgba(15, 23, 42, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 18rpx;
+}
+
+.stat-card.accent {
+  background: linear-gradient(135deg, #2563eb, #38bdf8);
+  color: #ffffff;
+  box-shadow: 0 20rpx 40rpx rgba(37, 99, 235, 0.28);
+}
+
+.stat-card.accent .stat-label,
+.stat-card.accent .stat-hint {
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.stat-label {
+  font-size: 26rpx;
+  color: #64748b;
+}
+
+.stat-value {
+  font-size: 60rpx;
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.stat-card.accent .stat-value {
+  color: #ffffff;
+}
+
+.stat-hint {
+  font-size: 26rpx;
+  color: #64748b;
+  line-height: 1.5;
+}
+
+.stat-card.highlight {
+  background: #f8fafc;
+  border: 2rpx solid rgba(37, 99, 235, 0.12);
+}
+
+.highlight-line {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #1e293b;
+}
+
+.highlight-count {
+  font-size: 26rpx;
+  color: #2563eb;
+}
+
+.highlight-empty {
+  font-size: 26rpx;
+  color: #94a3b8;
+}
+
+.encouragement-card {
+  margin-top: 48rpx;
+  background: #fff7ed;
+  border-radius: 28rpx;
+  padding: 32rpx;
+  display: flex;
+  align-items: center;
+  gap: 24rpx;
+  color: #9a3412;
+  box-shadow: 0 16rpx 32rpx rgba(251, 146, 60, 0.18);
+}
+
+.encouragement-icon {
+  font-size: 48rpx;
+}
+
+.encouragement-text {
+  font-size: 28rpx;
+  line-height: 1.6;
+  flex: 1;
+}

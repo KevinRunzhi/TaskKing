@@ -1,0 +1,50 @@
+<view class="page">
+  <view class="page-header">
+    <view class="page-title">任务统计</view>
+    <view class="page-subtitle">{{stats.rangeLabel}}</view>
+  </view>
+
+  <view class="range-tabs">
+    <view
+      wx:for="{{rangeTabs}}"
+      wx:key="key"
+      data-key="{{item.key}}"
+      class="tab-item {{activeRange === item.key ? 'active' : ''}}"
+      bindtap="onRangeTabTap"
+    >
+      {{item.label}}
+    </view>
+  </view>
+
+  <view class="card-grid">
+    <view class="stat-card accent">
+      <view class="stat-label">已完成任务</view>
+      <view class="stat-value">{{stats.completedCount}}</view>
+      <view class="stat-hint">{{stats.completedHint}}</view>
+    </view>
+
+    <view class="stat-card">
+      <view class="stat-label">连续完成天数</view>
+      <view class="stat-value">{{stats.streak}}</view>
+      <view class="stat-hint">{{stats.streakHint}}</view>
+    </view>
+
+    <view class="stat-card highlight">
+      <view class="stat-label">高光时刻</view>
+      <view wx:if="{{stats.highlightDate}}" class="highlight-line">
+        {{stats.highlightDate}} · {{stats.highlightLabel}}
+      </view>
+      <view wx:if="{{stats.highlightDate}}" class="highlight-count">
+        完成 {{stats.highlightCount}} 个任务
+      </view>
+      <view wx:else class="highlight-empty">
+        等待你的下一次闪光 ✨
+      </view>
+    </view>
+  </view>
+
+  <view class="encouragement-card">
+    <view class="encouragement-icon">{{stats.encouragementIcon}}</view>
+    <view class="encouragement-text">{{stats.encouragementText}}</view>
+  </view>
+</view>

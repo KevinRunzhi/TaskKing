@@ -7,6 +7,25 @@
   </view>
 
   <!-- 排序栏 -->
+  <scroll-view class="category-bar" scroll-x="true" enable-flex="true">
+    <view wx:for="{{categoryTabs}}"
+          wx:key="id"
+          class="category-chip {{selectedCategoryId === item.id ? 'active' : ''}}"
+          style="border-color: {{selectedCategoryId === item.id ? item.color : 'transparent'}}; background-color: {{selectedCategoryId === item.id ? item.color + '1A' : '#F1F5F9'}};"
+          bindtap="onCategorySelect"
+          data-id="{{item.id}}">
+      <view class="category-chip-icon"
+            style="background-color: {{item.color}};">
+        {{item.icon}}
+      </view>
+      <text class="category-chip-name">{{item.name}}</text>
+    </view>
+    <view class="category-chip manage" bindtap="onManageCategories">
+      <view class="category-chip-icon manage-icon">⚙️</view>
+      <text class="category-chip-name">管理</text>
+    </view>
+  </scroll-view>
+
   <view class="sort-bar">
     <picker bindchange="onSortChange" value="{{sortIndex}}" range="{{sortOptions}}">
       <view class="sort-picker">
@@ -66,8 +85,19 @@
             </view>
 
             <view class="task-meta">
-              <view wx:if="{{item.dueDate}}" class="due-date {{isOverdue(item.dueDate) ? 'overdue' : ''}}">
-                📅 {{formatDate(item.dueDate)}}
+              <view wx:if="{{selectedCategoryId === 'all'}}"
+                    class="task-category-tag"
+                    style="border-color: {{item.categoryColor}}; background-color: {{item.categoryColorLight}}; color: {{item.categoryColor}};">
+                {{item.categoryIcon}} {{item.categoryName}}
+              </view>
+              <view wx:if="{{item.displayDueDate}}" class="due-date {{isOverdueTask(item) ? 'overdue' : ''}}">
+                📅 {{item.displayDueDate}}
+              </view>
+              <view wx:if="{{item.displayDueTime}}" class="due-time">
+                ⏰ {{item.displayDueTime}}
+              </view>
+              <view wx:if="{{item.recurrenceEnabled}}" class="recurrence-tag">
+                🔁 {{item.recurrenceLabel}}
               </view>
               <view class="created-date">
                 创建于 {{formatCreatedDate(item.createdAt)}}
@@ -131,8 +161,19 @@
             </view>
 
             <view class="task-meta">
-              <view wx:if="{{item.dueDate}}" class="due-date">
-                📅 {{formatDate(item.dueDate)}}
+              <view wx:if="{{selectedCategoryId === 'all'}}"
+                    class="task-category-tag"
+                    style="border-color: {{item.categoryColor}}; background-color: {{item.categoryColorLight}}; color: {{item.categoryColor}};">
+                {{item.categoryIcon}} {{item.categoryName}}
+              </view>
+              <view wx:if="{{item.displayDueDate}}" class="due-date">
+                📅 {{item.displayDueDate}}
+              </view>
+              <view wx:if="{{item.displayDueTime}}" class="due-time">
+                ⏰ {{item.displayDueTime}}
+              </view>
+              <view wx:if="{{item.recurrenceEnabled}}" class="recurrence-tag">
+                🔁 {{item.recurrenceLabel}}
               </view>
               <view class="created-date">
                 创建于 {{formatCreatedDate(item.createdAt)}}
