@@ -30,6 +30,91 @@ const PRIORITY_VALUES = {
   [PRIORITY.LOW]: 1
 }
 
+const DEFAULT_THRESHOLD = 50
+const URGENCY_FALLBACK = 40
+
+function clampScore(value) {
+  const number = Number(value)
+  if (Number.isNaN(number)) {
+    return 0
+  }
+  if (number < 0) {
+    return 0
+  }
+  if (number > 100) {
+    return 100
+  }
+  return Math.round(number)
+}
+
+function inferImportanceScore(priority = PRIORITY.MEDIUM) {
+  switch (priority) {
+    case PRIORITY.HIGH:
+      return 85
+    case PRIORITY.LOW:
+      return 35
+    default:
+      return 60
+  }
+}
+
+function inferUrgencyScore(dueDateTime = '') {
+  if (!dueDateTime) {
+    return URGENCY_FALLBACK
+  }
+
+  const parsed = new Date(dueDateTime)
+  if (Number.isNaN(parsed.getTime())) {
+    return URGENCY_FALLBACK
+  }
+
+  const now = Date.now()
+  const diffHours = (parsed.getTime() - now) / (1000 * 60 * 60)
+
+  if (diffHours <= 12) {
+    return 90
+  }
+  if (diffHours <= 24) {
+    return 75
+  }
+  if (diffHours <= 72) {
+    return 60
+  }
+  if (diffHours <= 168) {
+    return 45
+  }
+  return 30
+}
+
+function getQuadrantFromScores(importanceScore = 0, urgencyScore = 0, threshold = DEFAULT_THRESHOLD) {
+  const important = importanceScore >= threshold
+  const urgent = urgencyScore >= threshold
+
+  if (important && urgent) {
+    return 1
+  }
+  if (important && !urgent) {
+    return 2
+  }
+  if (!important && urgent) {
+    return 3
+  }
+  return 4
+}
+
+function getQuadrantRecommendation(importanceScore = 0, urgencyScore = 0) {
+  switch (getQuadrantFromScores(importanceScore, urgencyScore)) {
+    case 1:
+      return '立即处理'
+    case 2:
+      return '计划安排'
+    case 3:
+      return '尽量委托'
+    default:
+      return '可以舍弃'
+  }
+}
+
 function parseDateParts(dateString) {
   if (!dateString) return null
   const parts = dateString.split('-')
@@ -214,6 +299,29 @@ function createTask(
     : 0
   const recurrenceStatusValue = recurrenceEnabled ? 'active' : 'inactive'
 
+  const importanceScoreValue = clampScore(
+    Object.prototype.hasOwnProperty.call(data, 'importanceScore')
+      ? data.importanceScore
+      : inferImportanceScore(data.priority || PRIORITY.MEDIUM)
+  )
+
+  const urgencyScoreValue = clampScore(
+    Object.prototype.hasOwnProperty.call(data, 'urgencyScore')
+      ? data.urgencyScore
+      : inferUrgencyScore(dueDateTimeValue)
+  )
+
+  const quadrantRecommendationValue = getQuadrantRecommendation(
+    importanceScoreValue,
+    urgencyScoreValue
+  )
+
+  const tagsValue = Array.isArray(data.tags)
+    ? data.tags
+        .map(tag => (typeof tag === 'string' ? tag.trim() : String(tag || '').trim()))
+        .filter(tag => !!tag)
+    : []
+
   return {
     id: '',
     title: trimmedTitle,
@@ -222,6 +330,9 @@ function createTask(
     dueTime: dueTimeValue,
     dueDateTime: dueDateTimeValue,
     priority: data.priority || PRIORITY.MEDIUM,
+    importanceScore: importanceScoreValue,
+    urgencyScore: urgencyScoreValue,
+    tags: tagsValue,
     categoryId: categoryIdValue,
     reminderEnabled,
     reminderDate: reminderDateValue,
@@ -250,7 +361,8 @@ function createTask(
         })()
       : '',
     createdAt: '',
-    updatedAt: new Date().toISOString()
+    updatedAt: new Date().toISOString(),
+    quadrantRecommendation: quadrantRecommendationValue
   }
 }
 
@@ -495,5 +607,11 @@ module.exports = {
   createDateTime,
   normalizeWeekdays,
   isValidDateString,
-  getDueDateObject
+  getDueDateObject,
+  clampScore,
+  inferImportanceScore,
+  inferUrgencyScore,
+  getQuadrantFromScores,
+  getQuadrantRecommendation,
+  DEFAULT_THRESHOLD
 }

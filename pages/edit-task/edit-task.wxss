@@ -66,6 +66,44 @@
   font-weight: 500;
 }
 
+.quadrant-summary {
+  margin-top: 16rpx;
+  background: #eef2ff;
+  border: 2rpx solid rgba(79, 70, 229, 0.18);
+  border-radius: 16rpx;
+  padding: 18rpx 20rpx;
+  display: flex;
+  flex-direction: column;
+  gap: 10rpx;
+}
+
+.summary-row {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex-wrap: wrap;
+}
+
+.summary-chip {
+  padding: 6rpx 18rpx;
+  border-radius: 999rpx;
+  background: linear-gradient(135deg, #4f46e5, #2563eb);
+  color: #ffffff;
+  font-size: 24rpx;
+  font-weight: 600;
+}
+
+.summary-score {
+  font-size: 24rpx;
+  color: #4338ca;
+  font-weight: 500;
+}
+
+.summary-hint {
+  font-size: 22rpx;
+  color: #64748b;
+}
+
 .label-row {
   display: flex;
   justify-content: space-between;
