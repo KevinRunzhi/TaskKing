@@ -16,32 +16,36 @@
     <!-- 任务标题 -->
     <view class="form-group">
       <view class="label">任务标题 *</view>
-      <input class="input title-input {{formData.completed ? 'completed-input' : ''}}"
-             name="title"
-             placeholder="请输入任务标题"
-             value="{{formData.title}}"
-             bindinput="onTitleInput"
-             maxlength="100" />
+      <input
+        class="input title-input {{formData.completed ? 'completed-input' : ''}}"
+        name="title"
+        placeholder="请输入任务标题"
+        value="{{formData.title}}"
+        bindinput="onTitleInput"
+        maxlength="100"
+      />
       <view class="char-count">{{formData.title.length}}/100</view>
       <view class="quadrant-summary" wx:if="{{quadrantRecommendation}}">
         <view class="summary-row">
           <view class="summary-chip">{{quadrantRecommendation}}</view>
           <view class="summary-score">重要 {{importanceScore}} · 紧急 {{urgencyScore}}</view>
         </view>
-        <view class="summary-hint">在象限视图中拖拽可调整评估</view>
+        <view class="summary-hint">在象限视图中拖拽可调整评分</view>
       </view>
     </view>
 
     <!-- 任务描述 -->
     <view class="form-group">
       <view class="label">任务描述</view>
-      <textarea class="textarea {{formData.completed ? 'completed-input' : ''}}"
-                name="description"
-                placeholder="请输入任务描述（可选）"
-                value="{{formData.description}}"
-                bindinput="onDescriptionInput"
-                maxlength="500"
-                auto-height />
+      <textarea
+        class="textarea {{formData.completed ? 'completed-input' : ''}}"
+        name="description"
+        placeholder="请输入任务描述（可选）"
+        value="{{formData.description}}"
+        bindinput="onDescriptionInput"
+        maxlength="500"
+        auto-height
+      ></textarea>
       <view class="char-count">{{formData.description.length}}/500</view>
     </view>
 
@@ -51,14 +55,18 @@
         <view class="label">任务分类</view>
         <navigator url="/pages/categories/categories" class="manage-link">管理分类</navigator>
       </view>
-      <picker mode="selector"
-              range="{{categories}}"
-              range-key="name"
-              value="{{selectedCategoryIndex}}"
-              bindchange="onCategoryChange">
+      <picker
+        mode="selector"
+        range="{{categories}}"
+        range-key="name"
+        value="{{selectedCategoryIndex}}"
+        bindchange="onCategoryChange"
+      >
         <view class="category-picker {{formData.completed ? 'completed-input' : ''}}">
-          <view class="category-icon"
-                style="background-color: {{selectedCategory ? selectedCategory.color : '#cccccc'}}">
+          <view
+            class="category-icon"
+            style="background-color: {{selectedCategory ? selectedCategory.color : '#cccccc'}}"
+          >
             {{selectedCategory ? selectedCategory.icon : '📌'}}
           </view>
           <view class="category-name">
@@ -71,10 +79,7 @@
     <!-- 截止日期 -->
     <view class="form-group">
       <view class="label">截止日期</view>
-      <picker mode="date"
-              value="{{formData.dueDate}}"
-              start="{{today}}"
-              bindchange="onDueDateChange">
+      <picker mode="date" value="{{formData.dueDate}}" start="{{today}}" bindchange="onDueDateChange">
         <view class="date-picker {{formData.dueDate ? '' : 'placeholder'}} {{formData.completed ? 'completed-input' : ''}}">
           {{formData.dueDate ? dueDateDisplay : '选择截止日期（可选）'}}
         </view>
@@ -87,11 +92,13 @@
     <!-- 截止时间 -->
     <view class="form-group">
       <view class="label">截止时间</view>
-      <picker mode="time"
-              value="{{formData.dueTime || defaultReminderTime}}"
-              start="00:00"
-              end="23:59"
-              bindchange="onDueTimeChange">
+      <picker
+        mode="time"
+        value="{{formData.dueTime || defaultReminderTime}}"
+        start="00:00"
+        end="23:59"
+        bindchange="onDueTimeChange"
+      >
         <view class="date-picker {{formData.dueTime ? '' : 'placeholder'}} {{formData.completed ? 'completed-input' : ''}}">
           {{formData.dueTime ? formData.dueTime : '选择截止时间（可选）'}}
         </view>
@@ -101,18 +108,18 @@
     <!-- 提醒设置 -->
     <view class="form-group reminder-toggle">
       <view class="label">任务提醒</view>
-      <switch class="reminder-switch"
-              checked="{{formData.reminderEnabled}}"
-              bindchange="onReminderToggle" />
+      <switch class="reminder-switch" checked="{{formData.reminderEnabled}}" bindchange="onReminderToggle" />
     </view>
 
     <view wx:if="{{formData.reminderEnabled}}">
       <view class="form-group">
         <view class="label">提醒日期</view>
-        <picker mode="date"
-                value="{{formData.reminderDate}}"
-                start="{{today}}"
-                bindchange="onReminderDateChange">
+        <picker
+          mode="date"
+          value="{{formData.reminderDate}}"
+          start="{{today}}"
+          bindchange="onReminderDateChange"
+        >
           <view class="date-picker {{formData.reminderDate ? '' : 'placeholder'}} {{formData.completed ? 'completed-input' : ''}}">
             {{formData.reminderDate ? reminderDateDisplay : '选择提醒日期'}}
           </view>
@@ -121,11 +128,13 @@
 
       <view class="form-group">
         <view class="label">提醒时间</view>
-        <picker mode="time"
-                value="{{formData.reminderTime || defaultReminderTime}}"
-                start="00:00"
-                end="23:59"
-                bindchange="onReminderTimeChange">
+        <picker
+          mode="time"
+          value="{{formData.reminderTime || defaultReminderTime}}"
+          start="00:00"
+          end="23:59"
+          bindchange="onReminderTimeChange"
+        >
           <view class="date-picker {{formData.reminderTime ? '' : 'placeholder'}} {{formData.completed ? 'completed-input' : ''}}">
             {{formData.reminderTime ? formData.reminderTime : '选择提醒时间'}}
           </view>
@@ -137,19 +146,19 @@
     <!-- 重复设置 -->
     <view class="form-group recurrence-toggle">
       <view class="label">重复任务</view>
-      <switch class="recurrence-switch"
-              checked="{{formData.recurrenceEnabled}}"
-              bindchange="onRecurrenceToggle" />
+      <switch class="recurrence-switch" checked="{{formData.recurrenceEnabled}}" bindchange="onRecurrenceToggle" />
     </view>
 
     <view wx:if="{{formData.recurrenceEnabled}}">
       <view class="form-group">
         <view class="label">重复频率</view>
-        <picker mode="selector"
-                range="{{recurrenceOptions}}"
-                range-key="label"
-                value="{{recurrenceTypeIndex}}"
-                bindchange="onRecurrenceTypeChange">
+        <picker
+          mode="selector"
+          range="{{recurrenceOptions}}"
+          range-key="label"
+          value="{{recurrenceTypeIndex}}"
+          bindchange="onRecurrenceTypeChange"
+        >
           <view class="date-picker {{formData.completed ? 'completed-input' : ''}}">
             {{recurrenceOptions[recurrenceTypeIndex] ? recurrenceOptions[recurrenceTypeIndex].label : ''}}
           </view>
@@ -159,12 +168,14 @@
       <view class="form-group">
         <view class="label">重复间隔</view>
         <view class="interval-input-wrapper {{formData.completed ? 'completed-input' : ''}}">
-          <input class="interval-input"
-                 type="number"
-                 placeholder="请输入重复间隔"
-                 min="1"
-                 value="{{formData.recurrenceInterval}}"
-                 bindinput="onRecurrenceIntervalInput" />
+          <input
+            class="interval-input"
+            type="number"
+            placeholder="请输入重复间隔"
+            min="1"
+            value="{{formData.recurrenceInterval}}"
+            bindinput="onRecurrenceIntervalInput"
+          />
           <view class="interval-unit {{formData.completed ? 'completed-text' : ''}}">
             每{{formData.recurrenceInterval || 1}}{{recurrenceIntervalUnit}}
           </view>
@@ -173,10 +184,12 @@
 
       <view class="form-group">
         <view class="label">重复结束时间</view>
-        <picker mode="date"
-                value="{{formData.recurrenceEndDate}}"
-                start="{{formData.dueDate || today}}"
-                bindchange="onRecurrenceEndDateChange">
+        <picker
+          mode="date"
+          value="{{formData.recurrenceEndDate}}"
+          start="{{formData.dueDate || today}}"
+          bindchange="onRecurrenceEndDateChange"
+        >
           <view class="date-picker {{formData.recurrenceEndDate ? '' : 'placeholder'}} {{formData.completed ? 'completed-input' : ''}}">
             {{formData.recurrenceEndDate ? formatDisplayDate(formData.recurrenceEndDate) : '选择结束日期（可选）'}}
           </view>
@@ -189,11 +202,13 @@
       <view wx:if="{{showRecurrenceWeekdays}}" class="form-group">
         <view class="label">自定义星期</view>
         <view class="weekday-selector">
-          <view wx:for="{{weekdayOptions}}"
-                wx:key="value"
-                class="weekday-option {{formData.recurrenceWeekdays.indexOf(item.value) !== -1 ? 'selected' : ''}}"
-                data-value="{{item.value}}"
-                bindtap="onRecurrenceWeekdayToggle">
+          <view
+            wx:for="{{weekdayOptions}}"
+            wx:key="value"
+            class="weekday-option {{formData.recurrenceWeekdays.indexOf(item.value) !== -1 ? 'selected' : ''}}"
+            data-value="{{item.value}}"
+            bindtap="onRecurrenceWeekdayToggle"
+          >
             {{item.label}}
           </view>
         </view>
@@ -204,11 +219,13 @@
     <view class="form-group">
       <view class="label">优先级</view>
       <view class="priority-options">
-        <view wx:for="{{priorityOptions}}"
-              wx:key="value"
-              class="priority-option {{formData.priority === item.value ? 'selected' : ''}} {{formData.completed ? 'completed-input' : ''}}"
-              bindtap="onPrioritySelect"
-              data-priority="{{item.value}}">
+        <view
+          wx:for="{{priorityOptions}}"
+          wx:key="value"
+          class="priority-option {{formData.priority === item.value ? 'selected' : ''}} {{formData.completed ? 'completed-input' : ''}}"
+          bindtap="onPrioritySelect"
+          data-priority="{{item.value}}"
+        >
           <view class="priority-color priority-{{item.value}}"></view>
           <view class="priority-text">{{item.label}}</view>
         </view>
@@ -218,11 +235,14 @@
     <!-- 任务信息 -->
     <view class="task-info">
       <view class="info-item">
-        <text class="info-label">创建时间：</text>
+        <text class="info-label">创建时间</text>
         <text class="info-value">{{formatDateTime(originalTask.createdAt)}}</text>
       </view>
-      <view wx:if="{{originalTask.updatedAt && originalTask.updatedAt !== originalTask.createdAt}}" class="info-item">
-        <text class="info-label">更新时间：</text>
+      <view
+        wx:if="{{originalTask.updatedAt && originalTask.updatedAt !== originalTask.createdAt}}"
+        class="info-item"
+      >
+        <text class="info-label">更新时间</text>
         <text class="info-value">{{formatDateTime(originalTask.updatedAt)}}</text>
       </view>
     </view>

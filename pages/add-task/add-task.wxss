@@ -9,6 +9,7 @@
 /* 表单组 */
 .form-group {
   margin-bottom: 48rpx;
+  position: relative;
 }
 
 .label {
@@ -38,6 +39,7 @@
   border: 2rpx solid #e0e0e0;
   border-radius: 12rpx;
   padding: 24rpx;
+  min-height: 64rpx;
 }
 
 .category-icon {
@@ -60,9 +62,11 @@
   background-color: white;
   border: 2rpx solid #e0e0e0;
   border-radius: 12rpx;
-  padding: 32rpx 24rpx;
+  padding: 24rpx;
   font-size: 32rpx;
   width: 100%;
+  min-height: 88rpx;
+  line-height: 1.5;
   box-sizing: border-box;
 }
 
@@ -99,9 +103,14 @@
   background-color: white;
   border: 2rpx solid #e0e0e0;
   border-radius: 12rpx;
-  padding: 32rpx 24rpx;
+  padding: 28rpx 24rpx;
   font-size: 32rpx;
   color: #333;
+  min-height: 96rpx;
+  line-height: 40rpx;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .date-picker.placeholder {
