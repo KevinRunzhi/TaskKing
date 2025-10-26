@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:developers.weixin.qq.com)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(cat:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

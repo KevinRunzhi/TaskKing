@@ -66,10 +66,25 @@ Page({
     isValid: false,
     today: '',
     reminderTemplateConfigured: isReminderTemplateConfigured(),
-    defaultReminderTime: '09:00'
+    defaultReminderTime: '09:00',
+    dueDateDisplay: '',
+    reminderDateDisplay: '',
+    recurrenceEndDateDisplay: '',
+    statusBarHeight: 0,
+    navBarHeight: 0
   },
 
   onLoad() {
+    // 获取系统信息，计算导航栏高度
+    const systemInfo = wx.getSystemInfoSync()
+    const statusBarHeight = systemInfo.statusBarHeight || 0
+    const navBarHeight = statusBarHeight + 56 // 56px 是自定义导航栏内容区域的高度
+
+    this.setData({
+      statusBarHeight,
+      navBarHeight
+    })
+
     this.setToday()
     this.syncCategories(false)
   },
@@ -223,11 +238,13 @@ Page({
   onDueDateChange(e) {
     const value = e.detail.value
     const updates = {
-      'formData.dueDate': value
+      'formData.dueDate': value,
+      dueDateDisplay: this.formatDisplayDate(value)
     }
 
     if (this.data.formData.reminderEnabled && !this.data.formData.reminderDate) {
       updates['formData.reminderDate'] = value
+      updates.reminderDateDisplay = this.formatDisplayDate(value)
     }
 
     if (
@@ -252,13 +269,15 @@ Page({
   clearDate() {
     const updates = {
       'formData.dueDate': '',
-      'formData.dueTime': ''
+      'formData.dueTime': '',
+      dueDateDisplay: ''
     }
 
     if (this.data.formData.reminderEnabled) {
       updates['formData.reminderEnabled'] = false
       updates['formData.reminderDate'] = ''
       updates['formData.reminderTime'] = ''
+      updates.reminderDateDisplay = ''
     }
 
     if (this.data.formData.recurrenceEnabled) {
@@ -266,6 +285,7 @@ Page({
       updates['formData.recurrenceEndDate'] = ''
       updates['formData.recurrenceWeekdays'] = []
       updates.showRecurrenceWeekdays = false
+      updates.recurrenceEndDateDisplay = ''
     }
 
     this.setData(updates, () => this.validateForm())
@@ -313,8 +333,10 @@ Page({
   },
 
   onReminderDateChange(e) {
+    const value = e.detail.value
     this.setData({
-      'formData.reminderDate': e.detail.value
+      'formData.reminderDate': value,
+      reminderDateDisplay: this.formatDisplayDate(value)
     }, () => this.validateForm())
   },
 
@@ -391,14 +413,17 @@ Page({
   },
 
   onRecurrenceEndDateChange(e) {
+    const value = e.detail.value
     this.setData({
-      'formData.recurrenceEndDate': e.detail.value
+      'formData.recurrenceEndDate': value,
+      recurrenceEndDateDisplay: this.formatDisplayDate(value)
     }, () => this.validateForm())
   },
 
   clearRecurrenceEndDate() {
     this.setData({
-      'formData.recurrenceEndDate': ''
+      'formData.recurrenceEndDate': '',
+      recurrenceEndDateDisplay: ''
     }, () => this.validateForm())
   },
 

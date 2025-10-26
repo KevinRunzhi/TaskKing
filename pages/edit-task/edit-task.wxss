@@ -164,9 +164,9 @@
 }
 
 .title-input {
-  padding: 0 24rpx;
-  height: 112rpx;
-  line-height: 112rpx;
+  padding: 24rpx;
+  min-height: 112rpx;
+  line-height: 1.5;
 }
 
 .input:focus {
