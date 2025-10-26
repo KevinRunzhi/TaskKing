@@ -69,10 +69,22 @@ Page({
     defaultReminderTime: '09:00',
     dueDateDisplay: '',
     reminderDateDisplay: '',
-    recurrenceEndDateDisplay: ''
+    recurrenceEndDateDisplay: '',
+    statusBarHeight: 0,
+    navBarHeight: 0
   },
 
   onLoad() {
+    // 获取系统信息，计算导航栏高度
+    const systemInfo = wx.getSystemInfoSync()
+    const statusBarHeight = systemInfo.statusBarHeight || 0
+    const navBarHeight = statusBarHeight + 56 // 56px 是自定义导航栏内容区域的高度
+
+    this.setData({
+      statusBarHeight,
+      navBarHeight
+    })
+
     this.setToday()
     this.syncCategories(false)
   },

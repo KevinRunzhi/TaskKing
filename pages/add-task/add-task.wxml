@@ -1,5 +1,16 @@
 <!--pages/add-task/add-task.wxml-->
-<view class="container">
+<!-- 自定义导航栏 -->
+<view class="custom-nav-bar" style="padding-top: {{statusBarHeight}}px;">
+  <view class="nav-content">
+    <view class="nav-back" bindtap="onCancel">
+      <text class="nav-back-icon">‹</text>
+    </view>
+    <view class="nav-title">添加任务</view>
+    <view class="nav-placeholder"></view>
+  </view>
+</view>
+
+<view class="container" style="margin-top: {{navBarHeight}}px;">
   <form bindsubmit="onSubmit">
     <!-- 任务标题 -->
     <view class="form-group">

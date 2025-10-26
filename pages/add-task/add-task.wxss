@@ -1,5 +1,55 @@
 /* pages/add-task/add-task.wxss */
 
+/* 自定义导航栏 - 增加高度 */
+.custom-nav-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background-color: #007AFF;
+  z-index: 9999;
+}
+
+.nav-content {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16rpx;
+  position: relative;
+}
+
+.nav-back {
+  width: 80rpx;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  z-index: 10;
+}
+
+.nav-back-icon {
+  font-size: 50rpx;
+  color: white;
+  font-weight: 300;
+  line-height: 1;
+}
+
+.nav-title {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 36rpx;
+  font-weight: 600;
+  color: white;
+  line-height: 56px;
+  text-align: center;
+}
+
+.nav-placeholder {
+  width: 80rpx;
+}
+
 .container {
   padding: 40rpx 32rpx;
   background-color: #f5f5f5;
